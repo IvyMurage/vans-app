@@ -26,6 +26,7 @@ import HostLayout from "./components/HostLayout"
 import Error from "./components/Error"
 
 import "./server"
+import { requireAuth } from './utils';
 
 const router = createBrowserRouter(createRoutesFromElements(
   <Route path="/" element={<Layout />}>
@@ -47,40 +48,45 @@ const router = createBrowserRouter(createRoutesFromElements(
       <Route index
         element={<Dashboard />}
         loader={async () => {
-          return null
+          return await requireAuth()
         }} />
+
       <Route path="income"
         element={<Income />}
         loader={async () => {
-          return null
+          return await requireAuth()
         }} />
+
       <Route path="reviews"
         element={<Reviews />}
         loader={async () => {
-          return null
+          return await requireAuth()
         }} />
+
       <Route path="vans"
         element={<HostVans />}
         loader={hostVan}
       />
+
       <Route path="vans/:id"
         element={<HostVanDetail />}
         loader={hostVanDetail}>
         <Route index
           element={<HostVanInfo />}
           loader={async () => {
-            return null
           }} />
+
         <Route path="pricing"
           element={<HostVanPricing />}
           loader={async () => {
-            return null
           }} />
+
         <Route path="photos"
           element={<HostVanPhotos />}
           loader={async () => {
-            return null
+            return await requireAuth()
           }} />
+
       </Route>
     </Route>
     <Route path="*" element={<NotFound />} />
