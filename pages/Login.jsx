@@ -1,25 +1,43 @@
 import React, { useState } from "react"
-import { useLoaderData, useNavigate } from "react-router-dom"
+import { Form, redirect, useLoaderData, useNavigate } from "react-router-dom"
 import { loginUser } from "../api"
 
 
 export function loginLoader({ request }) {
     return new URL(request.url).searchParams.get('message')
 }
+
+export async function formAction({ request }) {
+    const formData = await request.formData()
+    const email = formData.get('email')
+    const password = formData.get('password')
+
+    const loggedUser = await loginUser({ email, password })
+    if (loggedUser) {
+        localStorage.setItem('loggedIn', true)
+        return redirect('/host')
+    }
+    return null
+}
+
 export default function Login() {
     const message = useLoaderData()
     const [status, setStatus] = useState("idle")
     const [error, setError] = useState(null)
-    const [loginFormData, setLoginFormData] = React.useState({ email: "", password: "" })
+    const navigate = useNavigate()
+
 
     function handleSubmit(e) {
         e.preventDefault()
         const login = async () => {
+            nSubmit = { handleSubmit }
             setStatus("submitting")
             try {
                 const data = await loginUser(loginFormData)
                 setError(null)
                 console.log(data)
+                navigate('/host', { replace: true })
+
             }
             catch (error) {
                 setError(error.message)
@@ -48,26 +66,24 @@ export default function Login() {
             <h1>Sign in to your account</h1>
             {error && <h2 className='red'>{error}</h2>}
             {message && <h2 className='red'>{message}</h2>}
-            <form onSubmit={handleSubmit} className="login-form">
+            <Form method='POST' className="login-form" replace>
                 <input
                     name="email"
-                    onChange={handleChange}
                     type="email"
                     placeholder="Email address"
-                    value={loginFormData.email}
                 />
                 <input
                     name="password"
-                    onChange={handleChange}
                     type="password"
                     placeholder="Password"
-                    value={loginFormData.password}
                 />
                 <button
                     style={{ opacity: status === "submitting" ? 0.2 : 1 }}
                     disabled={status === "submitting"}
-                >Log in</button>
-            </form>
+                >
+                    Log in
+                </button>
+            </Form>
         </div>
     )
 
