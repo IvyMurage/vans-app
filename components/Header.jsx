@@ -12,7 +12,7 @@ export default function Header() {
 
     function fakeLogOut() {
         localStorage.removeItem('loggedIn')
-        return navigate('/login', { replace })
+        return navigate('/login', { replace: true })
     }
 
     return (
