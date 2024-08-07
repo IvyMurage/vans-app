@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React from "react"
 import { Form, redirect, useActionData, useLoaderData, useNavigation } from "react-router-dom"
 import { loginUser } from "../api"
 
@@ -12,13 +12,16 @@ export async function formAction({ request }) {
     const email = formData.get('email')
     const password = formData.get('password')
 
+    const pathname = new URL(request.url).searchParams.get('redirectTo') ?? '/host'
+
     try {
         const loggedUser = await loginUser({ email, password })
         if (loggedUser) {
             localStorage.setItem('loggedIn', true)
-            return redirect('/host')
+            return redirect(pathname)
         }
     }
+
     catch (error) {
         return error.message
     }
