@@ -9,19 +9,13 @@ export function loader({ params }) {
 export default function VanDetail() {
     const vanPromise = useLoaderData()
     const location = useLocation()
-    const error = useActionData()
 
     const search = location.state?.search || ""
     const type = location.state?.type || "all"
 
 
 
-    if (error) {
-        return <>
-            <pre>{error.message}</pre>
-            <h2>Failed to fetch van</h2>
-        </>
-    }
+
     function renderVan(van) {
         return (
             <div className="van-detail">

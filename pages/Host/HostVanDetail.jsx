@@ -10,7 +10,6 @@ export async function loader({ request, params }) {
 }
 export default function HostVanDetail() {
     const currentVanPromise = useLoaderData()
-    const error = useActionData()
     const activeStyles = {
         fontWeight: "bold",
         textDecoration: "underline",
@@ -18,14 +17,6 @@ export default function HostVanDetail() {
     }
 
 
-    if (error) {
-        return (
-            <>
-                <pre>{error.message}</pre>
-                <h2>Failed to fetch host van</h2>
-            </>
-        )
-    }
     function renderHostVan(currentVan) {
         return (
             <>

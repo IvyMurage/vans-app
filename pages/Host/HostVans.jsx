@@ -10,13 +10,6 @@ export async function loader({ request }) {
 }
 export default function HostVans() {
     const vans = useLoaderData()
-    const error = useActionData()
-    if (error) {
-        return <>
-            <pre>{error.message}</pre>
-            <h2>Failed to fetch van</h2>
-        </>
-    }
 
 
     function renderHostVans(vans) {
