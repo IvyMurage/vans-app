@@ -1,32 +1,44 @@
-import React from "react"
-import { Link, useLoaderData } from "react-router-dom"
+import React, { Suspense } from "react"
+import { Await, defer, Link, useActionData, useLoaderData } from "react-router-dom"
 import { getHostVans } from "../../api"
 import { requireAuth } from "../../utils"
 
 
 export async function loader({ request }) {
     await requireAuth(request)
-    return getHostVans()
+    return defer({ hostVans: getHostVans() })
 }
 export default function HostVans() {
     const vans = useLoaderData()
+    const error = useActionData()
+    if (error) {
+        return <>
+            <pre>{error.message}</pre>
+            <h2>Failed to fetch van</h2>
+        </>
+    }
 
 
-    const hostVansEls = vans.map(van => (
-        <Link
-            to={van.id}
-            key={van.id}
-            className="host-van-link-wrapper"
-        >
-            <div className="host-van-single" key={van.id}>
-                <img src={van.imageUrl} alt={`Photo of ${van.name}`} />
-                <div className="host-van-info">
-                    <h3>{van.name}</h3>
-                    <p>${van.price}/day</p>
+    function renderHostVans(vans) {
+
+        const hostVansEls = vans.map(van => (
+            <Link
+                to={van.id}
+                key={van.id}
+                className="host-van-link-wrapper"
+            >
+                <div className="host-van-single" key={van.id}>
+                    <img src={van.imageUrl} alt={`Photo of ${van.name}`} />
+                    <div className="host-van-info">
+                        <h3>{van.name}</h3>
+                        <p>${van.price}/day</p>
+                    </div>
                 </div>
-            </div>
-        </Link>
-    ))
+            </Link>
+        ))
+
+        return hostVansEls
+    }
 
     return (
         <section>
@@ -34,7 +46,11 @@ export default function HostVans() {
             <div className="host-vans-list">
 
                 <section>
-                    {hostVansEls}
+                    <Suspense fallback={<h1>Loading...</h1>}>
+                        <Await resolve={vans.hostVans}>
+                            {(vans) => renderHostVans(vans)}
+                        </Await>
+                    </Suspense>
                 </section>
 
             </div>

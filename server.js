@@ -34,7 +34,9 @@ createServer({
 
         this.get("/host/vans", (schema, request) => {
             // Hard-code the hostId for now
-            return schema.vans.where({ hostId: "123" })
+                        return new Response(400, {}, {error: "Error fetching data"})
+
+            // return schema.vans.where({ hostId: "123" })
         })
 
         this.get("/host/vans/:id", (schema, request) => {

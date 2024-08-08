@@ -44,7 +44,13 @@ const router = createBrowserRouter(createRoutesFromElements(
       errorElement={<Error />}
       loader={vansLoader}
     />
-    <Route path="vans/:id" element={<VanDetail />} loader={vanDetail} />
+    <Route
+      path="vans/:id"
+      element={<VanDetail />}
+      loader={vanDetail}
+      errorElement={<Error />}
+    />
+
 
     <Route path="host" element={<HostLayout />}>
       <Route index
@@ -68,11 +74,14 @@ const router = createBrowserRouter(createRoutesFromElements(
       <Route path="vans"
         element={<HostVans />}
         loader={hostVan}
+        errorElement={<Error />}
       />
 
       <Route path="vans/:id"
         element={<HostVanDetail />}
-        loader={hostVanDetail}>
+        loader={hostVanDetail}
+        errorElement={<Error />}
+      >
         <Route index
           element={<HostVanInfo />}
           loader={async () => {

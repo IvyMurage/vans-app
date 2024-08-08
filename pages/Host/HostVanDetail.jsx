@@ -1,16 +1,16 @@
-import React from "react"
-import { Link, NavLink, Outlet, useLoaderData } from "react-router-dom"
+import React, { Suspense } from "react"
+import { Await, defer, Link, NavLink, Outlet, useActionData, useLoaderData } from "react-router-dom"
 import { getHostVans } from "../../api"
 import { requireAuth } from "../../utils"
 
 
 export async function loader({ request, params }) {
     await requireAuth(request)
-    return getHostVans(params.id)
+    return defer({ vanHost: getHostVans(params.id) })
 }
 export default function HostVanDetail() {
-    const currentVan = useLoaderData()
-
+    const currentVanPromise = useLoaderData()
+    const error = useActionData()
     const activeStyles = {
         fontWeight: "bold",
         textDecoration: "underline",
@@ -18,15 +18,17 @@ export default function HostVanDetail() {
     }
 
 
-    return (
-        <section>
-            <Link
-                to=".."
-                relative="path"
-                className="back-button"
-            >&larr; <span>Back to all vans</span></Link>
-
-            <div className="host-van-detail-layout-container">
+    if (error) {
+        return (
+            <>
+                <pre>{error.message}</pre>
+                <h2>Failed to fetch host van</h2>
+            </>
+        )
+    }
+    function renderHostVan(currentVan) {
+        return (
+            <>
                 <div className="host-van-detail">
                     <img src={currentVan.imageUrl} />
                     <div className="host-van-detail-info-text">
@@ -62,6 +64,23 @@ export default function HostVanDetail() {
                     </NavLink>
                 </nav>
                 <Outlet context={{ currentVan }} />
+            </>
+        )
+    }
+
+    return (
+        <section>
+            <Link
+                to=".."
+                relative="path"
+                className="back-button"
+            >&larr; <span>Back to all vans</span></Link>
+            <div className="host-van-detail-layout-container">
+                <Suspense fallback={<h2>Loading...</h2>}>
+                    <Await resolve={currentVanPromise.vanHost}>
+                        {(van) => renderHostVan(van)}
+                    </Await>
+                </Suspense>
             </div>
         </section>
     )
